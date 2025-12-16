@@ -17,7 +17,7 @@ Este sistema implementa un pipeline completo de visión por computadora para el 
 🎯 Características Principales
 
     ✅ Detección robusta con YOLOv8 optimizado para imágenes histológicas
-    ✅ Manejo eficiente de imágenes TIFF de alta resolución (>10,000×10,000 píxeles)
+    ✅ Manejo eficiente de imágenes TIFF de alta resolución (>3 GB)
     ✅ Pipeline end-to-end desde imagen cruda hasta diagnóstico final
     ✅ Agregación inteligente con validación de criterios clínicos (mínimo 10 glomérulos)
     ✅ Visualizaciones detalladas y reportes médicos automatizados
@@ -47,7 +47,7 @@ Clase 3   Exclude
 🚀 Instalación
 Requisitos del Sistema
 
-    Python 3.8 o superior
+    Python 3.11 
     CUDA 11.8+ (recomendado para GPU)
     16 GB RAM mínimo (32 GB recomendado)
     50 GB espacio libre en disco
@@ -59,7 +59,7 @@ git clone
 2. Crear Entorno Virtual
 
 # Conda (recomendado)
-conda create -n lupus python=3.8
+conda create -n lupus python=3.11
 conda activate lupus
 
 # O usando venv
@@ -71,9 +71,6 @@ source venv/bin/activate  # Linux/Mac
 
 # Instalar PyTorch (ajustar según tu sistema)
 pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
-
-# Instalar dependencias del proyecto
-pip install -r requirements.txt
 
 4. Verificar Instalación
 
@@ -88,7 +85,7 @@ Configuración de Detección
 detection:
   model_name: "yolov8n"
   epochs: 100
-  batch_size: 16
+  batch_size: 12
   confidence_threshold: 0.5
   input_size: 1536
 
@@ -101,26 +98,27 @@ Configuración de Clasificación
 Antes de entrenar, organiza y valida tus datos:
 
 # Validar calidad de imágenes crudas
-python src/prepare_data_script.py --validate data/raw/images
+--check_pairs.py
+--eleccion de tamano patches(1).py
+
+# Tiling
+-- winner_15.py
 
 # Convertir anotaciones a formato YOLO
-python src/prepare_data_script.py \
-  --convert-annotations data/raw/annotations \
-  --annotation-format yolo
+--conversor_geojson_to_yolo_mydataset.py
+
+#Aumentación de datos offline
+--augmentations_for_minorities.py
+
+# Normalización de color (Reinhard)
+-- stain_normalization.py
 
 # Crear splits train/val/test
-python src/prepare_data_script.py \
-  --create-detection-splits \
+python src/split_patients.py \
   --images-dir data/raw/images \
   --annotations-dir data/annotations/yolo \
   --output-dir data/processed/detection
 
-2. Entrenamiento del Modelo de Detección
-
-python src/train_detection.py \
-  --data-dir data/processed/detection \
-  --annotations-dir data/annotations/yolo \
-  --config config/config.yaml
 
 Salidas del entrenamiento:
 
@@ -132,21 +130,10 @@ Salidas del entrenamiento:
 3. Diagnóstico Completo (Pipeline)
 Procesar una imagen individual:
 
-python src/full_pipeline.py \
+python src/br-038.ipynb \
   --detection-model models/detection/best.pt \
-  --classification-model models/classification/best_checkpoint.pth \
-  --classification-type resnet50 \
   --input data/biopsia_001.tiff \
   --output results/biopsia_001
-
-Procesar un lote de imágenes:
-
-python src/full_pipeline.py \
-  --detection-model models/detection/best.pt \
-  --classification-model models/classification/best_checkpoint.pth \
-  --input data/raw/biopsias/ \
-  --output results/batch_processing \
-  --batch
 
 📊 Interpretación de Resultados
 Archivo de Diagnóstico (diagnosis.json)
