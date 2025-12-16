@@ -36,6 +36,9 @@ Este sistema implementa un pipeline completo de visión por computadora para el 
 │     Final       │    │  (Voto Mayoria)  │    │                 │
 └─────────────────┘    └──────────────────┘    └─────────────────┘
 
+<img width="1920" height="1080" alt="Preprocesamiento + inferencia" src="https://github.com/user-attachments/assets/c9abe570-a18b-453b-be13-cc6da1e1f650" />
+
+
 📊 Clases de Nefritis Lúpica
 
 El sistema clasifica glomérulos en 3 clases agrupadas:
